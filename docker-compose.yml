@@ -1,0 +1,29 @@
+# Local/demo stack. Set secrets in a .env file next to this file (never commit it).
+#   SECRET_KEY=...            (required)
+#   SEED_USER_PASSWORD=...    (optional; used only if you run the seed command)
+services:
+  backend:
+    build: ./backend
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////data/hospital_flow.db}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:8080}
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+    volumes:
+      - hfa-data:/data
+    ports:
+      - "8000:8000"
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
+    depends_on: [backend]
+    ports:
+      - "8080:80"
+volumes:
+  hfa-data:
