@@ -29,7 +29,7 @@ def get_patient(db: Session, patient_id: int) -> Patient:
 def register(db: Session, actor: User, data: dict) -> Patient:
     if data["date_of_birth"] > date.today():
         raise ValidationFailed("Date of birth cannot be in the future")
-p = Patient(**data, patient_code=f"tmp-{uuid.uuid4().hex[:28]}", created_by=actor.id)
+    p = Patient(**data, patient_code=f"tmp-{uuid.uuid4().hex[:28]}", created_by=actor.id)
     db.add(p)
     db.flush()
     p.patient_code = f"PT-{p.id:06d}"
